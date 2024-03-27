@@ -327,8 +327,6 @@
       currentEl = event.target;
       oldColor = currentEl.value;
       currentFormat = getColorFormatFromStr(oldColor);
-      console.log('Opened', picker.classList.contains('clr-open'));
-      console.log(currentEl);
       picker.classList.toggle('clr-open');
 
       updatePickerPosition();
@@ -468,8 +466,9 @@
   /**
    * Close the color picker.
    * @param {boolean} [revert] If true, revert the color to the original value.
+   * @param {Event} event an Event from the Listener
    */
-  function closePicker(revert) {
+  function closePicker(revert, event) {
     if (currentEl && !settings.inline) {
       var prevEl = currentEl;
 
@@ -492,10 +491,15 @@
           prevEl.dispatchEvent(new Event('change', { bubbles: true }));
         }
       });
-      console.log('Close', currentEl);
+
       // Hide the picker dialog
-      console.log(picker);
-      picker.classList.remove('clr-open');
+      if (event) {
+        if (currentEl !== event.target) {
+          picker.classList.remove('clr-open');
+        }
+      } else {
+        picker.classList.remove('clr-open');
+      }
 
       // Reset any previously set per-instance options
       if (hasInstance) {
@@ -1058,10 +1062,9 @@
     });
 
     addListener(document, 'mousedown', function (event) {
-      console.log(event.target);
       keyboardNav = false;
       picker.classList.remove('clr-keyboard-nav');
-      // closePicker();
+      closePicker(false, event);
     });
 
     addListener(document, 'keydown', function (event) {
@@ -1197,7 +1200,8 @@
     var methods = {
       set: configure,
       wrap: wrapFields,
-      close: closePicker,
+      /** @param {string|undefined} [revert] */
+      close: function close(revert) {return closePicker(revert);},
       setInstance: setVirtualInstance,
       removeInstance: removeVirtualInstance,
       updatePosition: updatePickerPosition,
