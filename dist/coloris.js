@@ -125,13 +125,30 @@
           break;
         case 'swatches':
           if (Array.isArray(options.swatches)) {(function () {
-              var swatches = [];
+              var swatchesContainer = getEl('clr-swatches');
+              var swatches = document.createElement('div');
 
+              // Clear current swatches
+              swatchesContainer.textContent = '';
+
+              // Build new swatches
               options.swatches.forEach(function (swatch, i) {
-                swatches.push("<button type=\"button\" id=\"clr-swatch-" + i + "\" aria-labelledby=\"clr-swatch-label clr-swatch-" + i + "\" style=\"color: " + swatch + ";\">" + swatch + "</button>");
+                var button = document.createElement('button');
+
+                button.setAttribute('type', "button");
+                button.setAttribute('id', "clr-swatch-" + i);
+                button.setAttribute('aria-labelledby', "clr-swatch-label clr-swatch-" + i);
+                button.style.color = swatch;
+                button.textContent = swatch;
+
+                swatches.appendChild(button);
               });
 
-              getEl('clr-swatches').innerHTML = swatches.length ? "<div>" + swatches.join('') + "</div>" : '';
+              // Append new swatches if any
+              if (options.swatches.length) {
+                swatchesContainer.appendChild(swatches);
+              }
+
               settings.swatches = options.swatches.slice();})();
           }
           break;
@@ -310,7 +327,9 @@
       currentEl = event.target;
       oldColor = currentEl.value;
       currentFormat = getColorFormatFromStr(oldColor);
-      picker.classList.add('clr-open');
+      console.log('Opened', picker.classList.contains('clr-open'));
+      console.log(currentEl);
+      picker.classList.toggle('clr-open');
 
       updatePickerPosition();
       setColorFromStr(oldColor);
@@ -473,8 +492,9 @@
           prevEl.dispatchEvent(new Event('change', { bubbles: true }));
         }
       });
-
+      console.log('Close', currentEl);
       // Hide the picker dialog
+      console.log(picker);
       picker.classList.remove('clr-open');
 
       // Reset any previously set per-instance options
@@ -1038,9 +1058,10 @@
     });
 
     addListener(document, 'mousedown', function (event) {
+      console.log(event.target);
       keyboardNav = false;
       picker.classList.remove('clr-keyboard-nav');
-      closePicker();
+      // closePicker();
     });
 
     addListener(document, 'keydown', function (event) {

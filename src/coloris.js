@@ -327,7 +327,9 @@
       currentEl = event.target;
       oldColor = currentEl.value;
       currentFormat = getColorFormatFromStr(oldColor);
-      picker.classList.add('clr-open');
+      console.log('Opened',picker.classList.contains('clr-open'));
+      console.log(currentEl)
+      picker.classList.toggle('clr-open');
       
       updatePickerPosition();
       setColorFromStr(oldColor);
@@ -490,8 +492,9 @@
           prevEl.dispatchEvent(new Event('change', { bubbles: true }));
         }
       });
-
+      console.log('Close',currentEl);
       // Hide the picker dialog
+      console.log(picker);
       picker.classList.remove('clr-open');
 
       // Reset any previously set per-instance options
@@ -1055,9 +1058,10 @@
     });
 
     addListener(document, 'mousedown', event => {
+      console.log(event.target);
       keyboardNav = false;
       picker.classList.remove('clr-keyboard-nav');
-      closePicker();
+      // closePicker();
     });
 
     addListener(document, 'keydown', event => {
